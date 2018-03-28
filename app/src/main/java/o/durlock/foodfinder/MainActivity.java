@@ -129,6 +129,15 @@ public class MainActivity extends AppCompatActivity {
             startActivity(addIntent);
         }
 
+        else if (id == R.id.map) {
+            Intent addIntent = new Intent(MainActivity.this, MapsActivity.class);
+            startActivity(addIntent);
+        }
+
+        else if (id == R.id.mode_button) {
+            Intent addIntent = new Intent(MainActivity.this, Discovery.class);
+            startActivity(addIntent);
+        }
         return super.onOptionsItemSelected(item);
     }
 

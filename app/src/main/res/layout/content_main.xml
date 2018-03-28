@@ -16,4 +16,12 @@
 
     </android.support.v7.widget.RecyclerView>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
+        android:text="List Mode"
+        android:id="@+id/mode_button"
+        app:layout_constraintBottom_toBottomOf="@+id/food_list" />
+
 </android.support.constraint.ConstraintLayout>
