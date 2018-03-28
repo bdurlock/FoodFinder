@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
  * Created by Brett on 3/22/2018.
  */
 
-public class AddFood extends AppCompatActivity {
+public class AddFoodActivity extends AppCompatActivity {
    private FirebaseDatabase database;
    private DatabaseReference myRef;
    EditText editName;

@@ -15,7 +15,7 @@ import com.google.firebase.database.ValueEventListener;
  * Created by Brett on 3/22/2018.
  */
 
-public class SingleFood extends AppCompatActivity {
+public class SingleFoodActivity extends AppCompatActivity {
 
     private String food_key = null;
     private TextView singleName;
