@@ -8,9 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -25,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView mFoodList;
     private DatabaseReference mDatabase;
+
+    // Touch Listener variables
+    float x1, x2, y1, y2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +115,51 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         mFoodList.setAdapter(FBRA);
+
+        // Create listener for temporary add button
+        Button add_btn = (Button)findViewById(R.id.add_button);
+
+        add_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, AddFood.class));
+            }
+        });
+
+        // Create the button linking between main and discovery mode
+        Button mode_btn = (Button)findViewById(R.id.mode_button);
+
+        mode_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                startActivity(new Intent(MainActivity.this, Discovery.class));
+            }
+        });
+
     }
+
+    /*
+    Purpose: Swipe to the right to access list map
+     */
+    /*
+    public boolean onTouchEvent(MotionEvent touchevent){
+        switch (touchevent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                x1 = touchevent.getX();
+                y1 = touchevent.getY();
+
+                break;
+            case MotionEvent.ACTION_UP:
+                x2 = touchevent.getX();
+                y2 = touchevent.getY();
+                if (x1 > x2) {
+                    startActivity(new Intent(MainActivity.this, MapsActivity.class));
+                }
+                break;
+        }
+        return false;
+    }
+    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -134,10 +183,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(addIntent);
         }
 
-        else if (id == R.id.mode_button) {
-            Intent addIntent = new Intent(MainActivity.this, Discovery.class);
-            startActivity(addIntent);
-        }
         return super.onOptionsItemSelected(item);
     }
 
