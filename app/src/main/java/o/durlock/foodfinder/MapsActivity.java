@@ -31,7 +31,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
     }
 
     /**
@@ -55,7 +54,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
         }
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
         // Check to see if the current location get was successful
         if (location != null){
@@ -71,4 +70,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         }
     }
+
 }
