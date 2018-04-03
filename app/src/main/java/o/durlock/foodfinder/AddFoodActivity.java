@@ -54,5 +54,6 @@ public class AddFoodActivity extends AppCompatActivity {
        newFood.child("description").setValue(description);
        newFood.child("time").setValue(dateString);
 
+       finish();
    }
 }

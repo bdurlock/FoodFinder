@@ -4,10 +4,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -15,58 +31,86 @@ import android.view.ViewGroup;
  * Activities that contain this fragment must implement the
  * {@link ListFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class ListFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private RecyclerView recyclerView;
+    private DatabaseReference databaseReference;
+
 
     public ListFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ListFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ListFragment newInstance(String param1, String param2) {
-        ListFragment fragment = new ListFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        //startActivity(new Intent(getActivity(), ListActivity.class));
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_list, container, false);
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Food");
+
+        //Initializes Recycler View and Layout Manager.
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.food_list);
+        final LinearLayoutManager lm = new LinearLayoutManager(getContext());
+
+        FirebaseRecyclerAdapter<Food, FoodViewHolder> FBRA = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(
+                Food.class,
+                R.layout.food_row,
+                FoodViewHolder.class,
+                databaseReference
+        ) {
+            @Override
+            protected void populateViewHolder(FoodViewHolder viewHolder, Food model, int position) {
+                final String food_key = getRef(position).getKey().toString();
+                viewHolder.setName(model.getName());
+                viewHolder.setDistance(model.getDistance());
+                viewHolder.setRating(model.getRating());
+                viewHolder.setDescription(model.getDescription());
+
+                viewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent singleFoodActivity = new Intent(getActivity(), SingleFoodActivity.class);
+                        singleFoodActivity.putExtra("FoodId",food_key);
+                        startActivity(singleFoodActivity);
+                    }
+                });
+            }
+        };
+
+        recyclerView.setAdapter(FBRA);
+        recyclerView.setLayoutManager(lm);
+
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedIstanceState){
+       Button add_btn = (Button) getActivity().findViewById(R.id.add_button);
+
+       add_btn.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view){
+               startActivity(new Intent(getActivity(), AddFoodActivity.class));
+           }
+       });
+
+       Button list_btn = (Button) getActivity().findViewById(R.id.mode_button);
+       list_btn.setOnClickListener(new View.OnClickListener() {
+           @Override
+                   public void onClick(View view){
+               startActivity(new Intent(getActivity(), ListActivity.class));
+            }
+        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -75,6 +119,7 @@ public class ListFragment extends Fragment {
             mListener.onFragmentInteraction(uri);
         }
     }
+
 
     @Override
     public void onAttach(Context context) {
@@ -104,7 +149,36 @@ public class ListFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+
+    public static class FoodViewHolder extends RecyclerView.ViewHolder {
+        View mView;
+
+        public FoodViewHolder(View itemView) {
+            super(itemView);
+            mView = itemView;
+        }
+
+        public void setName(String name) {
+            TextView tv_restaurant = (TextView) mView.findViewById(R.id.restaurantText);
+            tv_restaurant.setText(name);
+        }
+
+        public void setDistance(String dist) {
+            TextView tv_distance = (TextView) mView.findViewById(R.id.distanceText);
+            tv_distance.setText(dist);
+        }
+
+        public void setRating(String rating) {
+            TextView tv_rating = (TextView) mView.findViewById(R.id.ratingText);
+            tv_rating.setText(rating);
+        }
+
+        public void setDescription(String desc) {
+            TextView tv_description = (TextView) mView.findViewById(R.id.descriptionText);
+            tv_description.setText(desc);
+        }
     }
 }

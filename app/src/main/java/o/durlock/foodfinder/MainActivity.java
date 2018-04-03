@@ -28,8 +28,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends FragmentActivity implements ListFragment.OnFragmentInteractionListener,MapFragment.OnFragmentInteractionListener {
 
-    private GoogleMap mMap;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,9 +59,7 @@ public class MainActivity extends FragmentActivity implements ListFragment.OnFra
 
             }
         });
-
     }
-//https://developers.google.com/android/reference/com/google/android/gms/maps/MapFragment
 
 
     @Override

@@ -1,8 +1,12 @@
 package o.durlock.foodfinder;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -29,7 +33,7 @@ public class SingleFoodActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_food);
 
-        String food_key = getIntent().getExtras().getString("FoodId");
+        final String food_key = getIntent().getExtras().getString("FoodId");
         mDatabase = FirebaseDatabase.getInstance().getReference().child("Food");
 
         singleName = (TextView) findViewById(R.id.singleName);
@@ -53,6 +57,30 @@ public class SingleFoodActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        Button delete_btn = (Button) findViewById(R.id.singleDelete);
+        delete_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(SingleFoodActivity.this)
+                        .setTitle("Confirm Delete")
+                        .setMessage("Are you sure you want to delete this restaurant?")
+                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                mDatabase.child(food_key).removeValue();
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_delete)
+                        .show();
 
             }
         });
