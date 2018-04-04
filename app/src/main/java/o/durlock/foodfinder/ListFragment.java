@@ -21,9 +21,17 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+import static android.content.ContentValues.TAG;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,6 +48,7 @@ public class ListFragment extends Fragment {
     private RecyclerView recyclerView;
     private DatabaseReference databaseReference;
 
+    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     public ListFragment() {
         // Required empty public constructor
@@ -109,18 +118,52 @@ public class ListFragment extends Fragment {
        list_btn.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view){
-               //Google Place Picker API
-               try{
-                   int PLACE_PICKER_REQUEST = 1;
-                   PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-                   startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
-               } catch (GooglePlayServicesNotAvailableException e){
-                   e.printStackTrace();
-               } catch (GooglePlayServicesRepairableException e){
-                   e.printStackTrace();
-               }
+               FindFood();
             }
         });
+    }
+
+    public void FindFood(){
+        //Google Place Picker API
+        try{
+            AutocompleteFilter  typeFilter = new AutocompleteFilter.Builder()
+                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ESTABLISHMENT)
+                    .build();
+            Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                    .setFilter(typeFilter)
+                    .build(getActivity());
+            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+        } catch (GooglePlayServicesNotAvailableException e){
+            e.printStackTrace();
+        } catch (GooglePlayServicesRepairableException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(getActivity(), data);
+                Log.i(TAG, "Place: " + place.getName());
+
+                //Get the data from the place
+                final String id = place.getId();
+
+                //Spawn the add activity with the extra information
+                Intent addintent = new Intent(getActivity(), AddFoodActivity.class);
+                addintent.putExtra("id",id);
+                startActivity(addintent);
+
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(getActivity(), data);
+                // TODO: Handle the error.
+                Log.i(TAG, status.getStatusMessage());
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
