@@ -24,14 +24,14 @@
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"
         android:text="Add"
-        app:layout_constraintBottom_toTopOf="@+id/mode_button" />
+        app:layout_constraintBottom_toTopOf="@+id/find_button" />
 
     <Button
-        android:id="@+id/mode_button"
+        android:id="@+id/find_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"
-        android:text="List Mode"
+        android:text="Find New Food"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

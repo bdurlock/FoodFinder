@@ -16,15 +16,14 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +35,7 @@ import java.util.List;
 public class ListFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
+    private Integer status;
 
     private RecyclerView recyclerView;
     private DatabaseReference databaseReference;
@@ -95,6 +95,7 @@ public class ListFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedIstanceState){
+
        Button add_btn = (Button) getActivity().findViewById(R.id.add_button);
 
        add_btn.setOnClickListener(new View.OnClickListener() {
@@ -104,11 +105,20 @@ public class ListFragment extends Fragment {
            }
        });
 
-       Button list_btn = (Button) getActivity().findViewById(R.id.mode_button);
+       Button list_btn = (Button) getActivity().findViewById(R.id.find_button);
        list_btn.setOnClickListener(new View.OnClickListener() {
            @Override
-                   public void onClick(View view){
-               startActivity(new Intent(getActivity(), ListActivity.class));
+           public void onClick(View view){
+               //Google Place Picker API
+               try{
+                   int PLACE_PICKER_REQUEST = 1;
+                   PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                   startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
+               } catch (GooglePlayServicesNotAvailableException e){
+                   e.printStackTrace();
+               } catch (GooglePlayServicesRepairableException e){
+                   e.printStackTrace();
+               }
             }
         });
     }

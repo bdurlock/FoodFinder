@@ -103,7 +103,7 @@ purpose: Runs at start. Begins the Firebase session and sets up click listeners
         });
 
         // Create the button linking between main and discovery mode
-        Button mode_btn = (Button)findViewById(R.id.mode_button);
+        Button mode_btn = (Button)findViewById(R.id.find_button);
 
         mode_btn.setOnClickListener(new View.OnClickListener() {
             @Override
