@@ -8,32 +8,77 @@ package o.durlock.foodfinder;
 
 public class Food {
 
-    private String name, distance, rating, description;
+    private String name, description, notes, type, who;
+    private float rating;
+    private int cost;
 
     public Food() {
 
     }
 
-    public Food(String restaurant, String distance, String rating, String description){
-        this.name = restaurant;
-        this.distance = distance;
+    public Food(String name, String description, String notes, String type, String who, float rating, int cost){
+        this.name = name;
+        this.description = description;
+        this.notes = notes;
+        this.type = type;
+        this.who = who;
         this.rating = rating;
+        this.cost = cost;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getWho() {
+        return who;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public int getCost() {
+        return cost;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    public String getName() { return name; }
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 
-    public String getDistance() { return distance; }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-    public String getRating() { return rating; }
+    public void setWho(String who) {
+        this.who = who;
+    }
 
-    public String getDescription() { return description; }
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
 
-    public void setRestaurant(String name) { this.name = name; }
-
-    public void setDistance(String distance) { this.distance = distance; }
-
-    public void setRating(String rating) { this.rating = rating; }
-
-    public void setDescription(String description) { this.description = description; }
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
 }

@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -81,9 +82,7 @@ public class ListFragment extends Fragment {
             protected void populateViewHolder(FoodViewHolder viewHolder, Food model, int position) {
                 final String food_key = getRef(position).getKey().toString();
                 viewHolder.setName(model.getName());
-                viewHolder.setDistance(model.getDistance());
-                viewHolder.setRating(model.getRating());
-                viewHolder.setDescription(model.getDescription());
+
 
                 viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -219,19 +218,19 @@ public class ListFragment extends Fragment {
             tv_restaurant.setText(name);
         }
 
-        public void setDistance(String dist) {
-            TextView tv_distance = (TextView) mView.findViewById(R.id.distanceText);
-            tv_distance.setText(dist);
+        public void setRating(long rating) {
+            RatingBar tv_rating = (RatingBar) mView.findViewById(R.id.rating);
+            tv_rating.setRating(rating);
         }
 
-        public void setRating(String rating) {
-            TextView tv_rating = (TextView) mView.findViewById(R.id.ratingText);
-            tv_rating.setText(rating);
+        public void setCost(int Cost) {
+            RatingBar tv_cost = (RatingBar) mView.findViewById(R.id.costRating);
+            tv_cost.setRating(Cost);
         }
 
-        public void setDescription(String desc) {
-            TextView tv_description = (TextView) mView.findViewById(R.id.descriptionText);
-            tv_description.setText(desc);
+        public void setTypeText(String type){
+            TextView tv_type = (TextView) mView.findViewById(R.id.typeText);
+            tv_type.setText(type);
         }
     }
 }
