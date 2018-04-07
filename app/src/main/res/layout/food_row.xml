@@ -27,90 +27,50 @@
                 android:id="@+id/restaurantText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
                 android:paddingTop="5dp"
                 android:text="Restaurant Name"
                 android:textColor="#000000"
                 android:textSize="25dp"
-                app:layout_constraintBaseline_toBaselineOf="@+id/distanceText"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <TextView
-                android:id="@+id/distanceText"
-                android:layout_width="match_parent"
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="11.1 mi"
-                android:gravity="end"
-                android:paddingRight="70dp"
-                android:paddingTop="15dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/ratingText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
-                android:paddingTop="40dp"
-                android:text="4.5"
-                app:layout_constraintBaseline_toBaselineOf="@+id/descriptionText"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/star"
-                android:layout_marginTop="41dp"
-                android:layout_marginStart="32dp"
-                android:layout_marginLeft="32dp"
+                android:numStars="5"
+                android:rating="2.5"
+                android:stepSize="0.5"
+                style="?android:attr/ratingBarStyleSmall"
+                android:isIndicator="true"
+                android:layout_marginTop="40dp"
+                android:layout_marginLeft="5dp"
                 />
 
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/star"
-                android:layout_marginTop="41dp"
-                android:layout_marginStart="47dp"
-                android:layout_marginLeft="47dp"/>
-
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/star"
-                android:layout_marginTop="41dp"
-                android:layout_marginStart="62dp"
-                android:layout_marginLeft="62dp"/>
-
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/star"
-                android:layout_marginTop="41dp"
-                android:layout_marginStart="77dp"
-                android:layout_marginLeft="77dp"/>
-
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/star"
-                android:layout_marginTop="41dp"
-                android:layout_marginStart="92dp"
-                android:layout_marginLeft="92dp"/>
+            <RatingBar
+                android:id="@+id/costBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="4"
+                android:rating="2"
+                android:stepSize="1"
+                style="@style/CostRatingBarSmall"
+                android:isIndicator="true"
+                android:layout_marginTop="42dp"
+                android:layout_marginLeft="100dp"
+                />
 
             <TextView
-                android:id="@+id/descriptionText"
+                android:id="@+id/typeText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_alignTop="@+id/imageView"
                 android:gravity="end"
-                android:paddingRight="70dp"
+                android:paddingRight="90dp"
                 android:paddingTop="40dp"
-                android:text="Description of Food"
+                android:text="Type of Food"
                 android:textAlignment="textEnd"
                 android:textColor="#000000"
                 app:layout_constraintEnd_toEndOf="parent"

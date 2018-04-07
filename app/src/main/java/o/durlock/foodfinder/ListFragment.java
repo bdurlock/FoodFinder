@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,9 +25,14 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBufferResponse;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -48,6 +54,8 @@ public class ListFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private DatabaseReference databaseReference;
+
+    private GeoDataClient mGeoDataClient;
 
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
@@ -79,10 +87,21 @@ public class ListFragment extends Fragment {
                 databaseReference
         ) {
             @Override
-            protected void populateViewHolder(FoodViewHolder viewHolder, Food model, int position) {
+            protected void populateViewHolder(final FoodViewHolder viewHolder, Food model, int position) {
+                String id = model.getID();
+                mGeoDataClient = Places.getGeoDataClient(getActivity(),null);
+                mGeoDataClient.getPlaceById(id).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+                    @Override
+                    public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                        if (task.isSuccessful()){
+                            PlaceBufferResponse places = task.getResult();
+                            Place myPlace = places.get(0);
+                            String mName = (String) myPlace.getName();
+                            viewHolder.setName(mName);
+                        }
+                    }
+                });
                 final String food_key = getRef(position).getKey().toString();
-                viewHolder.setName(model.getName());
-
 
                 viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -219,12 +238,12 @@ public class ListFragment extends Fragment {
         }
 
         public void setRating(long rating) {
-            RatingBar tv_rating = (RatingBar) mView.findViewById(R.id.rating);
+            RatingBar tv_rating = (RatingBar) mView.findViewById(R.id.ratingBar);
             tv_rating.setRating(rating);
         }
 
         public void setCost(int Cost) {
-            RatingBar tv_cost = (RatingBar) mView.findViewById(R.id.costRating);
+            RatingBar tv_cost = (RatingBar) mView.findViewById(R.id.costBar);
             tv_cost.setRating(Cost);
         }
 

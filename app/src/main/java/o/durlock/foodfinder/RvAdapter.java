@@ -28,10 +28,7 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.FoodViewHolder> {
 
     @Override
     public void onBindViewHolder(FoodViewHolder holder, int position){
-        holder.setDescription(entries.get(position).getDescription());
-        holder.setDistance(entries.get(position).getDistance());
-        holder.setName(entries.get(position).getName());
-        holder.setRating(entries.get(position).getRating());
+        //holder.setName(entries.get(position).getName());
     }
 
     @Override
@@ -52,19 +49,5 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.FoodViewHolder> {
             tv_restaurant.setText(name);
         }
 
-        public void setDistance(String dist) {
-            TextView tv_distance = (TextView) mView.findViewById(R.id.distanceText);
-            tv_distance.setText(dist);
-        }
-
-        public void setRating(String rating) {
-            TextView tv_rating = (TextView) mView.findViewById(R.id.ratingText);
-            tv_rating.setText(rating);
-        }
-
-        public void setDescription(String desc) {
-            TextView tv_description = (TextView) mView.findViewById(R.id.descriptionText);
-            tv_description.setText(desc);
-        }
     }
 }

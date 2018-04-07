@@ -45,20 +45,6 @@ public class ListActivity extends AppCompatActivity {
             tv_restaurant.setText(name);
         }
 
-        public void setDistance(String dist) {
-            TextView tv_distance = (TextView) mView.findViewById(R.id.distanceText);
-            tv_distance.setText(dist);
-        }
-
-        public void setRating(String rating) {
-            TextView tv_rating = (TextView) mView.findViewById(R.id.ratingText);
-            tv_rating.setText(rating);
-        }
-
-        public void setDescription(String desc) {
-            TextView tv_description = (TextView) mView.findViewById(R.id.descriptionText);
-            tv_description.setText(desc);
-        }
     }
 
     /*
@@ -75,10 +61,7 @@ purpose: Runs at start. Begins the Firebase session and sets up click listeners
             @Override
             protected void populateViewHolder(FoodViewHolder viewHolder, Food model, int position) {
                 final String food_key = getRef(position).getKey().toString();
-                viewHolder.setName(model.getName());
-                viewHolder.setDistance(model.getDistance());
-                viewHolder.setRating(model.getRating());
-                viewHolder.setDescription(model.getDescription());
+                //viewHolder.setName(model.getName());
 
                 viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override

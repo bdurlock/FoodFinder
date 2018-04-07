@@ -23,4 +23,10 @@
         <item name="android:maxHeight">48dp</item>
     </style>
 
+    <style name="CostRatingBarSmall" parent="@android:style/Widget.RatingBar">
+        <item name="android:progressDrawable">@drawable/dollar_rating_bar_small</item>
+        <item name="android:minHeight">15dp</item>
+        <item name="android:maxHeight">15dp</item>
+    </style>
+
 </resources>

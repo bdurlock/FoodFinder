@@ -1,5 +1,13 @@
 package o.durlock.foodfinder;
 
+import android.support.annotation.NonNull;
+
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBufferResponse;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
 /**
  * Class: Food
  * Purpose: This holds an instance of a restaurant with all the given information that you need.
@@ -8,7 +16,7 @@ package o.durlock.foodfinder;
 
 public class Food {
 
-    private String name, description, notes, type, who;
+    private String id, description, notes, type, who;
     private float rating;
     private int cost;
 
@@ -16,8 +24,8 @@ public class Food {
 
     }
 
-    public Food(String name, String description, String notes, String type, String who, float rating, int cost){
-        this.name = name;
+    public Food(String id, String description, String notes, String type, String who, float rating, int cost){
+        this.id = id;
         this.description = description;
         this.notes = notes;
         this.type = type;
@@ -26,9 +34,7 @@ public class Food {
         this.cost = cost;
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getID() {return id; }
 
     public String getDescription() {
         return description;
@@ -54,9 +60,7 @@ public class Food {
         return cost;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public void setID(String id) { this.id = id; }
 
     public void setDescription(String description) {
         this.description = description;
