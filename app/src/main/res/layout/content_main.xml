@@ -12,19 +12,10 @@
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="120dp"
+        android:layout_marginBottom="60dp"
         android:id="@+id/food_list">
 
     </android.support.v7.widget.RecyclerView>
-
-
-    <Button
-        android:id="@+id/add_button"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginBottom="8dp"
-        android:text="Add"
-        app:layout_constraintBottom_toTopOf="@+id/find_button" />
 
     <Button
         android:id="@+id/find_button"

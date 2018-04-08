@@ -1,15 +1,18 @@
 package o.durlock.foodfinder;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -36,10 +39,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Locale;
+
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static android.content.ContentValues.TAG;
-import static java.lang.Math.round;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,16 +51,19 @@ import static java.lang.Math.round;
  * {@link ListFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  * create an instance of this fragment.
+ *
+ * This listfragment displays the list of restaurants on the main page
  */
 public class ListFragment extends Fragment {
 
+    //GPS Constant Permission
+    private static final int MY_PERMISSION_ACCESS_COARSE_LOCATION = 11;
+    private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 12;
+
     private OnFragmentInteractionListener mListener;
-    private Integer status;
-
-    private RecyclerView recyclerView;
-    private DatabaseReference databaseReference;
-
     private GeoDataClient mGeoDataClient;
+
+    private LatLng sourcePoint;
 
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
@@ -73,63 +80,91 @@ public class ListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        //Setup local variables
+        RecyclerView mRecyclerView;
+        DatabaseReference mDatabaseReference;
+
+        //Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_list, container, false);
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Food");
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Food");
 
         //Initializes Recycler View and Layout Manager.
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.food_list);
+        mRecyclerView = rootView.findViewById(R.id.food_list);
         final LinearLayoutManager lm = new LinearLayoutManager(getContext());
 
-        LocationManager loctaionManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        LocationManager mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
 
-        Location location = loctaionManager.getLastKnownLocation(loctaionManager.getBestProvider(criteria, false));
+        //We check for permission now
+        // https://stackoverflow.com/questions/33327984/call-requires-permissions-that-may-be-rejected-by-user
+        if (ContextCompat.checkSelfPermission( getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission( getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //One or both permissions denied
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        MY_PERMISSION_ACCESS_COARSE_LOCATION);
+            }
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSION_ACCESS_FINE_LOCATION);
+            }
+        } else {
+            Location location = mLocationManager.getLastKnownLocation(mLocationManager.getBestProvider(criteria, false));
 
-        double lat = location.getLatitude();
-        double lon = location.getLongitude();
+            double lat = location.getLatitude();
+            double lon = location.getLongitude();
 
-        final LatLng sourcePoint = new LatLng(lat,lon);
+            sourcePoint = new LatLng(lat,lon);
+        }
 
         FirebaseRecyclerAdapter<Food, FoodViewHolder> FBRA = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(
                 Food.class,
                 R.layout.food_row,
                 FoodViewHolder.class,
-                databaseReference
+                mDatabaseReference
         ) {
             @Override
             protected void populateViewHolder(final FoodViewHolder viewHolder, Food model, int position) {
                 final String id = model.getID();
-                mGeoDataClient = Places.getGeoDataClient(getActivity(),null);
+                mGeoDataClient = Places.getGeoDataClient(getActivity());
                 Log.i("Cost", (model.getCost().toString()));
                 mGeoDataClient.getPlaceById(id).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
                     @Override
                     public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
                         if (task.isSuccessful()){
                             PlaceBufferResponse places = task.getResult();
+                            //This is a known bug. Fine to ignore.
                             Place myPlace = places.get(0);
                             String mName = (String) myPlace.getName();
                             viewHolder.setName(mName);
                             viewHolder.setRating(myPlace.getRating());
                             viewHolder.setCost(myPlace.getPriceLevel());
 
-                            //Now calculate the distance
-                            LatLng destinationPoint = myPlace.getLatLng();
+                            //Check if sourcePoint is set, if not then we don't display distance
+                            if (sourcePoint != null){
+                                //Now calculate the distance
+                                LatLng destinationPoint = myPlace.getLatLng();
 
-                            //TODO: Get the distance using google's distancematrix to get a useful distance, not just straight distance
-                            float[] results = new float[1];
-                            Location.distanceBetween(sourcePoint.latitude, sourcePoint.longitude, destinationPoint.latitude, destinationPoint.longitude, results);
+                                //TODO: Get the distance using google's distancematrix to get a useful distance, not just straight distance
+                                float[] results = new float[1];
+                                Location.distanceBetween(sourcePoint.latitude, sourcePoint.longitude, destinationPoint.latitude, destinationPoint.longitude, results);
 
-                            double dist_miles = results[0] * 0.000621371;
-                            viewHolder.setDistance(String.format("%.2f",dist_miles) + " mi");
+                                double dist_miles = results[0] * 0.000621371;
+                                viewHolder.setDistance(String.format(Locale.getDefault(),"%.2f",dist_miles) + " mi");
+                            } else {
+                                viewHolder.setDistance("");
+                            }
 
                         }
                     }
                 });
-                final String food_key = getRef(position).getKey().toString();
+                final String food_key = getRef(position).getKey();
 
                 viewHolder.setTypeText(model.getType());
 
+                //Make the whole box an onclick listener
                 viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -141,25 +176,16 @@ public class ListFragment extends Fragment {
             }
         };
 
-        recyclerView.setAdapter(FBRA);
-        recyclerView.setLayoutManager(lm);
+        mRecyclerView.setAdapter(FBRA);
+        mRecyclerView.setLayoutManager(lm);
 
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedIstanceState){
-
-       Button add_btn = (Button) getActivity().findViewById(R.id.add_button);
-
-       add_btn.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view){
-               startActivity(new Intent(getActivity(), AddFoodActivity.class));
-           }
-       });
-
-       Button list_btn = (Button) getActivity().findViewById(R.id.find_button);
+        //Create the listener to find new food
+       Button list_btn = getActivity().findViewById(R.id.find_button);
        list_btn.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view){
@@ -196,9 +222,9 @@ public class ListFragment extends Fragment {
                 final String id = place.getId();
 
                 //Spawn the add activity with the extra information
-                Intent addintent = new Intent(getActivity(), AddFoodActivity.class);
-                addintent.putExtra("id",id);
-                startActivity(addintent);
+                Intent mAddIntent = new Intent(getActivity(), AddFoodActivity.class);
+                mAddIntent.putExtra("id",id);
+                startActivity(mAddIntent);
 
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getActivity(), data);
@@ -217,7 +243,6 @@ public class ListFragment extends Fragment {
             mListener.onFragmentInteraction(uri);
         }
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -250,7 +275,6 @@ public class ListFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-
     public static class FoodViewHolder extends RecyclerView.ViewHolder {
         View mView;
 
@@ -260,32 +284,32 @@ public class ListFragment extends Fragment {
         }
 
         public void setName(String name) {
-            TextView tv_restaurant = (TextView) mView.findViewById(R.id.restaurantText);
+            TextView tv_restaurant = mView.findViewById(R.id.restaurantText);
             tv_restaurant.setText(name);
         }
 
         public void setRating(float rating) {
-            RatingBar tv_rating = (RatingBar) mView.findViewById(R.id.ratingBar);
+            RatingBar tv_rating = mView.findViewById(R.id.ratingBar);
             tv_rating.setRating(rating);
         }
 
         public float getRating() {
-            RatingBar tv_rating_get = (RatingBar) mView.findViewById(R.id.ratingBar);
+            RatingBar tv_rating_get = mView.findViewById(R.id.ratingBar);
             return tv_rating_get.getRating();
         }
 
         public void setCost(int Cost) {
-            RatingBar tv_cost = (RatingBar) mView.findViewById(R.id.costBar);
+            RatingBar tv_cost = mView.findViewById(R.id.costBar);
             tv_cost.setRating(Cost);
         }
 
         public void setTypeText(String type){
-            TextView tv_type = (TextView) mView.findViewById(R.id.typeText);
+            TextView tv_type = mView.findViewById(R.id.typeText);
             tv_type.setText(type);
         }
 
         public void setDistance(String distance){
-            TextView dist = (TextView) mView.findViewById(R.id.distanceText);
+            TextView dist = mView.findViewById(R.id.distanceText);
             dist.setText(distance);
         }
     }

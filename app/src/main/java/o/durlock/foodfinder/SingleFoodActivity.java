@@ -2,7 +2,6 @@ package o.durlock.foodfinder;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -24,7 +23,6 @@ public class SingleFoodActivity extends AppCompatActivity {
     private String food_key = null;
     private TextView singleName;
     private TextView singleDistance;
-    private TextView singleRating;
     private TextView singleDescription;
     private DatabaseReference mDatabase;
 
@@ -36,21 +34,19 @@ public class SingleFoodActivity extends AppCompatActivity {
         final String food_key = getIntent().getExtras().getString("FoodId");
         mDatabase = FirebaseDatabase.getInstance().getReference().child("Food");
 
-        singleName = (TextView) findViewById(R.id.singleName);
-        singleDistance = (TextView) findViewById(R.id.singleDistance);
-        singleDescription = (TextView) findViewById(R.id.singleDescription);
+        singleName = findViewById(R.id.singleName);
+        singleDistance = findViewById(R.id.singleDistance);
+        singleDescription = findViewById(R.id.singleDescription);
 
         mDatabase.child(food_key).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String food_name = (String) dataSnapshot.child("name").getValue();
                 String food_distance = (String) dataSnapshot.child("distance").getValue();
-                String food_rating = (String) dataSnapshot.child("rating").getValue();
                 String food_description = (String) dataSnapshot.child("description").getValue();
 
                 singleName.setText(food_name);
                 singleDistance.setText(food_distance);
-                singleRating.setText(food_rating);
                 singleDescription.setText(food_description);
             }
 
@@ -60,7 +56,7 @@ public class SingleFoodActivity extends AppCompatActivity {
             }
         });
 
-        Button delete_btn = (Button) findViewById(R.id.singleDelete);
+        Button delete_btn = findViewById(R.id.singleDelete);
         delete_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

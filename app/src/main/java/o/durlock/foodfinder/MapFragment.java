@@ -1,35 +1,23 @@
 package o.durlock.foodfinder;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,16 +26,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * to handle interaction events.
  */
 public class MapFragment extends Fragment{
-    MapView mMapView;
-    private GoogleMap googleMap;
+    private MapView mMapView;
+    private GoogleMap mGoogleMap;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_map, container, false);
 
-        mMapView = (MapView) rootView.findViewById(R.id.mapView);
+        mMapView = rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
-
         mMapView.onResume(); // needed to get the map to display immediately
 
         try {
@@ -59,9 +46,7 @@ public class MapFragment extends Fragment{
         mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap mMap) {
-                googleMap = mMap;
-
-
+                mGoogleMap = mMap;
 
                 LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
                 Criteria criteria = new Criteria();
@@ -71,18 +56,13 @@ public class MapFragment extends Fragment{
                 double lat = location.getLatitude();
                 double lon = location.getLongitude();
 
-                // For showing a move to my location button
-                googleMap.setMyLocationEnabled(true);
-
-                // For dropping a marker at a point on the Map
-                LatLng sydney = new LatLng(-34, 151);
+                //For showing a move to the user's location button
+                mGoogleMap.setMyLocationEnabled(true);
                 LatLng me = new LatLng(lat, lon);
 
-                googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"));
-
-                // For zooming automatically to the location of the marker
+                //Zoom into the user's location
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(me).zoom(12).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
         });
 

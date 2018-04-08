@@ -1,16 +1,16 @@
 package o.durlock.foodfinder;
 
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 /**
+ * This is how the fragment view works on the main page
  * Created by Brett on 3/27/2018.
  */
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
-    int mTabCount;
+    private int mTabCount;
 
     public PagerAdapter(FragmentManager fm, int TabCount){
         super(fm);
@@ -21,11 +21,9 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position){
         switch(position){
             case 0:
-                ListFragment list = new ListFragment();
-                return list;
+                return new ListFragment();
             case 1:
-                MapFragment map = new MapFragment();
-                return map;
+                return new MapFragment();
             default:
                 return null;
         }

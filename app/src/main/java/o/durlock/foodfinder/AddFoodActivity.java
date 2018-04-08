@@ -1,9 +1,5 @@
 package o.durlock.foodfinder;
 
-import android.content.Context;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -14,17 +10,14 @@ import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.app.Fragment;
 
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -33,61 +26,66 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import org.w3c.dom.Text;
-
-import java.text.SimpleDateFormat;
-
 /**
+ * AddFoodActivity: After selecting a restaurant from the google place interface,
+ * we give the user a chance to input extra information and we add that to the database.
+ *
  * Created by Brett on 3/22/2018.
  */
 
 public class AddFoodActivity extends AppCompatActivity {
-   private FirebaseDatabase database;
-   private DatabaseReference myRef;
-   private GeoDataClient mGeoDataClient;
-   private GoogleMap mMap;
-   private String place_id;
-   private Place myPlace;
-   TextView foodName;
-   EditText editDescription;
-   RatingBar ratingBar;
-   RatingBar costBar;
-   Spinner editType;
-   EditText editWho;
-   EditText editNotes;
+    private FirebaseDatabase mDatabase;
+    private String mPlaceId;
+    private Place mPlace;
+    private TextView mFoodName;
+    private RatingBar mRatingBar;
+    private RatingBar mCostBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_food);
-        database = FirebaseDatabase.getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
 
+        //Setup the geodataclient variable for the places id info
+        GeoDataClient mGeoDataClient;
+
+        //Create the mini map for the top of the screen
         final com.google.android.gms.maps.MapFragment mapFragment = (com.google.android.gms.maps.MapFragment) getFragmentManager().findFragmentById(R.id.addMapFragment);
 
+        //extras store the id that is passed from the google places api.
+        //This should never be null, if it's null then we have a problem.
         Bundle extras = getIntent().getExtras();
         if (extras != null){
-            place_id = extras.getString("id");
-            foodName = findViewById(R.id.addNameText);
-            ratingBar = findViewById(R.id.addRating);
-            costBar = findViewById(R.id.addCost);
+            //Get the id extra info
+            mPlaceId = extras.getString("id");
 
-            mGeoDataClient = Places.getGeoDataClient(this, null);
+            //Find the view elements
+            mFoodName = findViewById(R.id.addNameText);
+            mRatingBar = findViewById(R.id.addRating);
+            mCostBar = findViewById(R.id.addCost);
 
-            mGeoDataClient.getPlaceById(place_id).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+            //Initiate the places variable
+            mGeoDataClient = Places.getGeoDataClient(this);
+
+            //Get the place based on the id.
+            mGeoDataClient.getPlaceById(mPlaceId).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
                 @Override
                 public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
                     if (task.isSuccessful()) {
                         PlaceBufferResponse places = task.getResult();
-                        myPlace = places.get(0);
-                        final CharSequence fName = myPlace.getName();
-                        foodName.setText(fName);
-                        ratingBar.setRating(myPlace.getRating());
-                        costBar.setRating(myPlace.getPriceLevel());
-                        final LatLng loc = myPlace.getLatLng();
+                        //Google says this can be safely ignored. Known issue.
+                        mPlace = places.get(0);
+                        final CharSequence fName = mPlace.getName();
+                        mFoodName.setText(fName);
+                        mRatingBar.setRating(mPlace.getRating());
+                        mCostBar.setRating(mPlace.getPriceLevel());
+                        final LatLng loc = mPlace.getLatLng();
                         mapFragment.getMapAsync(new OnMapReadyCallback() {
                             @Override
                             public void onMapReady(GoogleMap mMap) {
-                                // For zooming automatically to the location of the marker
+                                //For zooming automatically to the location of the marker
                                 CameraPosition cameraPosition = new CameraPosition.Builder().target(loc).zoom(12).build();
                                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                                 mMap.addMarker(new MarkerOptions().position(loc).title((String) fName));
@@ -99,7 +97,7 @@ public class AddFoodActivity extends AppCompatActivity {
         }
 
         //Create the drop down menu
-        Spinner spinner = (Spinner) findViewById(R.id.typeDropDown);
+        Spinner spinner = findViewById(R.id.typeDropDown);
         //Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.typesArray, android.R.layout.simple_spinner_item);
@@ -111,29 +109,49 @@ public class AddFoodActivity extends AppCompatActivity {
 
     }
 
+    /*
+    This gets called when the 'add' button is clicked on the bottom of the page.
+    We only want to store data that we need, and not anything provided to us from
+    Google places, because that would be in violation of their terms of use.
+     */
    public void addButtonClicked(View view){
-       if(place_id != null){
-           editDescription = (EditText) findViewById(R.id.addDescriptionEdit);
-           ratingBar = (RatingBar) findViewById(R.id.addRating);
-           costBar = (RatingBar) findViewById(R.id.addCost);
-           editType = (Spinner) findViewById(R.id.typeDropDown);
-           editWho = (EditText) findViewById(R.id.addWhoRecommended);
-           editNotes = (EditText) findViewById(R.id.addNotes);
+       //Setup variables
+       DatabaseReference myRef;
+       EditText editDescription;
 
+       Spinner editType;
+       EditText editWho;
+       EditText editNotes;
+
+       if(mPlaceId != null){
+           //Get all the elements
+           //TODO: Add ratingbar and costbar support (need to fix the listfragment and uncomment the stuff here)
+           editDescription = findViewById(R.id.addDescriptionEdit);
+           //ratingBar = findViewById(R.id.addRating);
+           //costBar = findViewById(R.id.addCost);
+           editType = findViewById(R.id.typeDropDown);
+           editWho = findViewById(R.id.addWhoRecommended);
+           editNotes = findViewById(R.id.addNotes);
+
+           //Pull the values out
            String getDescription = editDescription.getText().toString();
-           float getRating = ratingBar.getRating();
-           int getCost = (int) costBar.getRating();
+           //float getRating = ratingBar.getRating();
+           //int getCost = (int) costBar.getRating();
            String getType = editType.getSelectedItem().toString();
+           //I'm not sure if the typeID value will be useful, but it doesn't hurt to store it
            long getTypeID = editType.getSelectedItemId();
            String getWho = editWho.getText().toString();
            String getNotes = editNotes.getText().toString();
 
+           //Get system time for time stamp
            long date = System.currentTimeMillis();
 
-           myRef = database.getInstance().getReference().child("Food");
+           //initialize the database variable
+           myRef = mDatabase.getReference().child("Food");
 
+           //Push and add all of the values
            DatabaseReference newFood = myRef.push();
-           newFood.child("id").setValue(place_id);
+           newFood.child("id").setValue(mPlaceId);
            if(!TextUtils.isEmpty(getDescription)){
                newFood.child("description").setValue(getDescription);
            }
@@ -152,13 +170,16 @@ public class AddFoodActivity extends AppCompatActivity {
            //Listfragment to use the user's ratings.
            //Currently, this feature is not working so it I'm forcing it to always use the google
            //ratings.
+           /*
            if (getRating != myPlace.getRating()){
                newFood.child("rating").setValue(getRating);
            }
            if (getCost != myPlace.getPriceLevel()) {
                newFood.child("cost").setValue(getCost);
            }
+           */
 
+           //Close this activity
            finish();
        }
    }

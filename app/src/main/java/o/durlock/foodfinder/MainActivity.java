@@ -1,10 +1,8 @@
 package o.durlock.foodfinder;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,16 +15,15 @@ public class MainActivity extends AppCompatActivity implements ListFragment.OnFr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
-        getSupportActionBar().setTitle("Food Finder");
 
-        TabLayout tabLayout = (TabLayout)findViewById(R.id.tablayout);
+        TabLayout tabLayout = findViewById(R.id.tablayout);
         tabLayout.addTab(tabLayout.newTab().setText("List"));
         tabLayout.addTab(tabLayout.newTab().setText("Map"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        final ViewPager viewPager = (ViewPager)findViewById(R.id.pager);
+        final ViewPager viewPager = findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(),tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
