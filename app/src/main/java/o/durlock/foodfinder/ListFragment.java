@@ -2,6 +2,9 @@ package o.durlock.foodfinder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -18,11 +21,8 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.GeoDataClient;
@@ -30,7 +30,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
@@ -39,6 +39,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static android.content.ContentValues.TAG;
+import static java.lang.Math.round;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -80,6 +81,16 @@ public class ListFragment extends Fragment {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.food_list);
         final LinearLayoutManager lm = new LinearLayoutManager(getContext());
 
+        LocationManager loctaionManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+
+        Location location = loctaionManager.getLastKnownLocation(loctaionManager.getBestProvider(criteria, false));
+
+        double lat = location.getLatitude();
+        double lon = location.getLongitude();
+
+        final LatLng sourcePoint = new LatLng(lat,lon);
+
         FirebaseRecyclerAdapter<Food, FoodViewHolder> FBRA = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(
                 Food.class,
                 R.layout.food_row,
@@ -88,8 +99,9 @@ public class ListFragment extends Fragment {
         ) {
             @Override
             protected void populateViewHolder(final FoodViewHolder viewHolder, Food model, int position) {
-                String id = model.getID();
+                final String id = model.getID();
                 mGeoDataClient = Places.getGeoDataClient(getActivity(),null);
+                Log.i("Cost", (model.getCost().toString()));
                 mGeoDataClient.getPlaceById(id).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
                     @Override
                     public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
@@ -98,10 +110,25 @@ public class ListFragment extends Fragment {
                             Place myPlace = places.get(0);
                             String mName = (String) myPlace.getName();
                             viewHolder.setName(mName);
+                            viewHolder.setRating(myPlace.getRating());
+                            viewHolder.setCost(myPlace.getPriceLevel());
+
+                            //Now calculate the distance
+                            LatLng destinationPoint = myPlace.getLatLng();
+
+                            //TODO: Get the distance using google's distancematrix to get a useful distance, not just straight distance
+                            float[] results = new float[1];
+                            Location.distanceBetween(sourcePoint.latitude, sourcePoint.longitude, destinationPoint.latitude, destinationPoint.longitude, results);
+
+                            double dist_miles = results[0] * 0.000621371;
+                            viewHolder.setDistance(String.format("%.2f",dist_miles) + " mi");
+
                         }
                     }
                 });
                 final String food_key = getRef(position).getKey().toString();
+
+                viewHolder.setTypeText(model.getType());
 
                 viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -237,9 +264,14 @@ public class ListFragment extends Fragment {
             tv_restaurant.setText(name);
         }
 
-        public void setRating(long rating) {
+        public void setRating(float rating) {
             RatingBar tv_rating = (RatingBar) mView.findViewById(R.id.ratingBar);
             tv_rating.setRating(rating);
+        }
+
+        public float getRating() {
+            RatingBar tv_rating_get = (RatingBar) mView.findViewById(R.id.ratingBar);
+            return tv_rating_get.getRating();
         }
 
         public void setCost(int Cost) {
@@ -250,6 +282,11 @@ public class ListFragment extends Fragment {
         public void setTypeText(String type){
             TextView tv_type = (TextView) mView.findViewById(R.id.typeText);
             tv_type.setText(type);
+        }
+
+        public void setDistance(String distance){
+            TextView dist = (TextView) mView.findViewById(R.id.distanceText);
+            dist.setText(distance);
         }
     }
 }

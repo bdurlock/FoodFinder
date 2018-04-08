@@ -38,7 +38,6 @@ public class SingleFoodActivity extends AppCompatActivity {
 
         singleName = (TextView) findViewById(R.id.singleName);
         singleDistance = (TextView) findViewById(R.id.singleDistance);
-        singleRating = (TextView) findViewById(R.id.singleRating);
         singleDescription = (TextView) findViewById(R.id.singleDescription);
 
         mDatabase.child(food_key).addValueEventListener(new ValueEventListener() {

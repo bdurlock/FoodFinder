@@ -56,7 +56,7 @@ public class Food {
         return rating;
     }
 
-    public int getCost() {
+    public Integer getCost() {
         return cost;
     }
 

@@ -2,19 +2,5 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="o.durlock.foodfinder.MainActivity">
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/addFood"
-        android:title="Add Food"
-        app:showAsAction="always"
-        android:icon="@drawable/addicon"
-        />
-    <item
-        android:id="@id/map"
-        android:title="Map"
-        />
+
 </menu>

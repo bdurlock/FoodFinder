@@ -148,6 +148,10 @@ public class AddFoodActivity extends AppCompatActivity {
 
            //Only store the rating and the cost if it's different from the google provided values
            //This allows the user to set their own rating if they disagree with the one from google
+           //TODO: Fix this feature. Also update activity_add_food to isindicator(false) and
+           //Listfragment to use the user's ratings.
+           //Currently, this feature is not working so it I'm forcing it to always use the google
+           //ratings.
            if (getRating != myPlace.getRating()){
                newFood.child("rating").setValue(getRating);
            }
