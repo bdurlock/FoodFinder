@@ -87,7 +87,7 @@ public class AddFoodActivity extends AppCompatActivity {
                             public void onMapReady(GoogleMap mMap) {
                                 //For zooming automatically to the location of the marker
                                 CameraPosition cameraPosition = new CameraPosition.Builder().target(loc).zoom(12).build();
-                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                                mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                                 mMap.addMarker(new MarkerOptions().position(loc).title((String) fName));
                             }
                         });

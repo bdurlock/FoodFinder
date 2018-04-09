@@ -129,30 +129,29 @@ public class ListFragment extends Fragment {
             protected void populateViewHolder(final FoodViewHolder viewHolder, Food model, int position) {
                 final String id = model.getID();
                 mGeoDataClient = Places.getGeoDataClient(getActivity());
-                Log.i("Cost", (model.getCost().toString()));
                 mGeoDataClient.getPlaceById(id).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
                     @Override
                     public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
                         if (task.isSuccessful()){
                             PlaceBufferResponse places = task.getResult();
                             //This is a known bug. Fine to ignore.
-                            Place myPlace = places.get(0);
-                            String mName = (String) myPlace.getName();
+                            Place mPlace = places.get(0);
+                            String mName = (String) mPlace.getName();
                             viewHolder.setName(mName);
-                            viewHolder.setRating(myPlace.getRating());
-                            viewHolder.setCost(myPlace.getPriceLevel());
+                            viewHolder.setRating(mPlace.getRating());
+                            viewHolder.setCost(mPlace.getPriceLevel());
 
                             //Check if sourcePoint is set, if not then we don't display distance
                             if (sourcePoint != null){
                                 //Now calculate the distance
-                                LatLng destinationPoint = myPlace.getLatLng();
+                                LatLng destinationPoint = mPlace.getLatLng();
 
                                 //TODO: Get the distance using google's distancematrix to get a useful distance, not just straight distance
                                 float[] results = new float[1];
                                 Location.distanceBetween(sourcePoint.latitude, sourcePoint.longitude, destinationPoint.latitude, destinationPoint.longitude, results);
 
                                 double dist_miles = results[0] * 0.000621371;
-                                viewHolder.setDistance(String.format(Locale.getDefault(),"%.2f",dist_miles) + " mi");
+                                viewHolder.setDistance(String.format(Locale.getDefault(),"%.1f",dist_miles) + " mi");
                             } else {
                                 viewHolder.setDistance("");
                             }

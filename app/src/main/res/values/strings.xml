@@ -10,21 +10,22 @@
     <string-array name="typesArray">
         <item>Other</item>
         <item>Barbecue</item>
+        <item>Brewery</item>
         <item>Buffet</item>
         <item>Cafe</item>
         <item>Cafeteria</item>
-        <item>Casual Dining</item>
-        <item>Diner</item>
-        <item>Ethnic - American</item>
-        <item>Ethnic - Chinese</item>
-        <item>Ethnic - Italian</item>
-        <item>Ethnic - Mexican</item>
+        <item>Chinese</item>
         <item>Ethnic</item>
         <item>Family Style</item>
-        <item>Fast Casual</item>
         <item>Fast Food</item>
-        <item>Fine Dining</item>
+        <item>Grocery Store</item>
+        <item>Italian</item>
+        <item>Korean</item>
+        <item>Mexican</item>
+        <item>Pizzeria</item>
         <item>Pub</item>
+        <item>Steak House</item>
+        <item>Sushi</item>
     </string-array>
 </resources>
 
