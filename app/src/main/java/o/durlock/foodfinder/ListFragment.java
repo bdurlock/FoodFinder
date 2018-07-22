@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -184,11 +185,11 @@ public class ListFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedIstanceState){
         //Create the listener to find new food
-       Button list_btn = getActivity().findViewById(R.id.find_button);
-       list_btn.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view){
-               FindFood();
+        FloatingActionButton find_btn = getActivity().findViewById(R.id.find_button);
+        find_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FindFood();
             }
         });
     }

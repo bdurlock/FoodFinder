@@ -12,17 +12,20 @@
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="60dp"
         android:id="@+id/food_list">
 
     </android.support.v7.widget.RecyclerView>
 
-    <Button
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/find_button"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginBottom="8dp"
-        android:text="Find New Food"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:backgroundTint="@color/colorPrimary"
+        android:elevation="0dp"
+        android:src="@drawable/addicon"
+        android:layout_margin="16dp"
+        />
 
 </android.support.constraint.ConstraintLayout>

@@ -1,6 +1,7 @@
 package o.durlock.foodfinder;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -24,6 +25,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -84,7 +86,8 @@ public class MapFragment extends Fragment{
                                 //Get map of restaurants in datasnapshot
                                 for (DataSnapshot entry : dataSnapshot.getChildren()){
                                     mGeoDataClient = Places.getGeoDataClient(getActivity());
-                                    Log.i("ID",entry.toString());
+                                    final String key = entry.getKey();
+                                    Log.i("IDTHING:",entry.toString());
                                     String id = entry.child("id").getValue(String.class);
                                     mGeoDataClient.getPlaceById(id).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
                                         @Override
@@ -95,7 +98,8 @@ public class MapFragment extends Fragment{
                                                 LatLng loc = mPlace.getLatLng();
                                                 String name = (String) mPlace.getName();
 
-                                                mGoogleMap.addMarker(new MarkerOptions().position(loc).title(name));
+                                                Marker marker = mGoogleMap.addMarker(new MarkerOptions().position(loc).title(name));
+                                                marker.setTag(key);
                                             }
                                         }
                                     });
@@ -119,8 +123,33 @@ public class MapFragment extends Fragment{
                 //Zoom into the user's location
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(me).zoom(12).build();
                 mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                //When the info box on a marker is tapped on, we want to launch the activity for that food
+                mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(Marker marker) {
+                        String id = (String) (marker.getTag());
+                        Log.d("DOUBLE CLICKED:", id);
+
+                        Intent singleFoodActivity = new Intent(getActivity(), SingleFoodActivity.class);
+                        singleFoodActivity.putExtra("FoodId",id);
+                        startActivity(singleFoodActivity);
+
+                    }
+                });
+
+                //Edit this to add functionality for what happens when a marker is tapped on
+                mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker){
+                        String id = (String)(marker.getTag());
+                        Log.d("CLICKED:", id);
+                        return false;
+                    }
+                });
             }
         });
+
 
         return rootView;
     }

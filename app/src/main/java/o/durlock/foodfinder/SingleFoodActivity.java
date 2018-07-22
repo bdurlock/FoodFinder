@@ -12,6 +12,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -228,6 +231,12 @@ public class SingleFoodActivity extends AppCompatActivity {
                         .setMessage("Are you sure you want to delete this restaurant?")
                         .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
+                                //android.app.Fragment frg = null;
+                                //frg = getFragmentManager().findFragmentById(R.id.map_fragment);
+                                //final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                                //ft.detach(frg);
+                                //ft.attach(frg);
+                                //ft.commit();
                                 mDatabase.child(food_key).removeValue();
                                 finish();
                             }

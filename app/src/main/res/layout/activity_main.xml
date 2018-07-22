@@ -19,7 +19,6 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         >
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -27,6 +26,7 @@
             android:textColor="#FFFFFF"
             android:textSize="30dp"
             android:fontFamily="sans-serif-light"
+            android:textAlignment="center"
             android:gravity="center"
             android:id="@+id/toolbar_title"/>
 
